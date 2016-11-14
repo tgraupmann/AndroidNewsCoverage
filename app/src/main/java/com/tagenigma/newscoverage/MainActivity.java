@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -117,6 +118,10 @@ public class MainActivity extends Activity {
 
             webView.getSettings().setLoadsImagesAutomatically(false);
 
+            webView.getSettings().setBuiltInZoomControls(true);
+
+            webView.getSettings().setDefaultZoom(WebSettings.ZoomDensity.FAR);
+
             webView.setWebChromeClient(new WebChromeClient() {
                 public void onProgressChanged(WebView view, int progress) {
                 }
@@ -131,6 +136,7 @@ public class MainActivity extends Activity {
             webView.loadUrl(mSources[i]);
         }
 
+        mSourceIndex = mSources.length / 2;
         updatreLayout();
     }
 
