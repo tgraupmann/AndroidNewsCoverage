@@ -12,7 +12,7 @@ The header has some navigation buttons.
 
 * More Right - Switches to a news site that is more conservative
 
-* D - Switches to the far right news site
+* R - Switches to the far right news site
 
 This app is inspired by the article [What I Discovered About Trump and Clinton From Analyzing 4 Million Facebook Posts](https://shift.newco.co/what-i-discovered-about-trump-and-clinton-from-analyzing-4-million-facebook-posts-922a4381fd2f#.eiq8vpcrc).
 
