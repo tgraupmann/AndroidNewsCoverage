@@ -1,7 +1,6 @@
 package com.tagenigma.newscoverage;
 
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -20,8 +19,6 @@ import android.widget.Toast;
  */
 public class MainActivity extends Activity {
 
-    private float mX;
-
     private final String[] mSources = {
             "http://www.huffingtonpost.com/",
             "http://www.wsj.com/",
@@ -39,7 +36,9 @@ public class MainActivity extends Activity {
             "http://www.foxnews.com/",
     };
 
-    private int mSourceIndex = 0;
+    private static int sSourceIndex = 0;
+
+    private static String[] sLocations;
 
     private LinearLayout[] mParents = null;
 
@@ -49,7 +48,7 @@ public class MainActivity extends Activity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                LinearLayout rootLayout = mParents[mSourceIndex];
+                LinearLayout rootLayout = mParents[sSourceIndex];
                 setContentView(rootLayout);
             }
         });
@@ -59,6 +58,13 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (null == sLocations) {
+            sLocations = new String[mSources.length];
+            for (int i = 0; i < mSources.length; ++i) {
+                sLocations[i] = mSources[i];
+            }
+        }
+
         mParents = new LinearLayout[mSources.length];
         for (int i = 0; i < mSources.length; ++i) {
             LinearLayout rootLayout = new LinearLayout(MainActivity.this);
@@ -67,7 +73,7 @@ public class MainActivity extends Activity {
             rootLayout.setOrientation(LinearLayout.VERTICAL);
 
             TextView textView = new TextView(MainActivity.this);
-            textView.setText("("+i+") "+mSources[i]);
+            textView.setText("(" + i + ") " + mSources[i]);
             rootLayout.addView(textView);
 
             LinearLayout buttonRow = new LinearLayout(MainActivity.this);
@@ -75,8 +81,22 @@ public class MainActivity extends Activity {
             buttonRow.setOrientation(LinearLayout.HORIZONTAL);
             rootLayout.addView(buttonRow);
 
-            Button btnLeft = new Button(MainActivity.this);
+            Button btnDemocrat = new Button(MainActivity.this);
             LinearLayout.LayoutParams layout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            layout.gravity = Gravity.LEFT;
+            layout.weight = 1;
+            btnDemocrat.setLayoutParams(layout);
+            btnDemocrat.setText("D");
+            btnDemocrat.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    moveFarLeft();
+                }
+            });
+            buttonRow.addView(btnDemocrat);
+
+            Button btnLeft = new Button(MainActivity.this);
+            layout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             layout.gravity = Gravity.LEFT;
             layout.weight = 1;
             btnLeft.setLayoutParams(layout);
@@ -88,6 +108,22 @@ public class MainActivity extends Activity {
                 }
             });
             buttonRow.addView(btnLeft);
+
+            Button btnTop = new Button(MainActivity.this);
+            layout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            layout.gravity = Gravity.CENTER_HORIZONTAL;
+            layout.weight = 1;
+            btnTop.setLayoutParams(layout);
+            btnTop.setText("Top");
+            btnTop.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String url = mSources[sSourceIndex];
+                    sLocations[sSourceIndex] = url;
+                    mWebViews[sSourceIndex].loadUrl(url);
+                }
+            });
+            buttonRow.addView(btnTop);
 
             Button btnRight = new Button(MainActivity.this);
             layout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -102,6 +138,20 @@ public class MainActivity extends Activity {
                 }
             });
             buttonRow.addView(btnRight);
+
+            Button btnRepublican = new Button(MainActivity.this);
+            layout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            layout.gravity = Gravity.RIGHT;
+            layout.weight = 1;
+            btnRepublican.setLayoutParams(layout);
+            btnRepublican.setText("R");
+            btnRepublican.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    moveFarRight();
+                }
+            });
+            buttonRow.addView(btnRepublican);
         }
 
         mWebViews = new WebView[mSources.length];
@@ -133,35 +183,47 @@ public class MainActivity extends Activity {
                 }
             });
 
-            webView.loadUrl(mSources[i]);
+            String url = sLocations[i];
+            webView.loadUrl(url);
         }
 
-        mSourceIndex = mSources.length / 2;
+        sSourceIndex = mSources.length / 2;
+
         updatreLayout();
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        updatreLayout();
+    protected void onPause() {
+        super.onPause();
+        for (int i = 0; i < mSources.length; ++i) {
+            sLocations[i] = mWebViews[i].getUrl();
+        }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        updatreLayout();
+    private void moveFarLeft() {
+        if (sSourceIndex > 0) {
+            sSourceIndex = 0;
+            updatreLayout();
+        }
     }
 
     private void moveLeft() {
-        if (mSourceIndex > 0) {
-            mSourceIndex = mSourceIndex - 1;
+        if (sSourceIndex > 0) {
+            sSourceIndex = sSourceIndex - 1;
             updatreLayout();
         }
     }
 
     private void moveRight() {
-        if ((mSourceIndex + 1) < mSources.length) {
-            mSourceIndex = mSourceIndex + 1;
+        if ((sSourceIndex + 1) < mSources.length) {
+            sSourceIndex = sSourceIndex + 1;
+            updatreLayout();
+        }
+    }
+
+    private void moveFarRight() {
+        if ((sSourceIndex + 1) < mSources.length) {
+            sSourceIndex = mSources.length - 1;
             updatreLayout();
         }
     }
