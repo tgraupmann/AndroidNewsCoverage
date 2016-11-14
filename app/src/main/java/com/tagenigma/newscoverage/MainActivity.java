@@ -19,7 +19,7 @@ import android.widget.Toast;
  */
 public class MainActivity extends Activity {
 
-    private final String[] mSources = {
+    private static final String[] sSources = {
             "http://www.huffingtonpost.com/",
             "http://www.wsj.com/",
             "http://www.nytimes.com/",
@@ -36,7 +36,7 @@ public class MainActivity extends Activity {
             "http://www.foxnews.com/",
     };
 
-    private static int sSourceIndex = 0;
+    private static int sSourceIndex = sSources.length / 2;;
 
     private static String[] sLocations;
 
@@ -59,21 +59,21 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         if (null == sLocations) {
-            sLocations = new String[mSources.length];
-            for (int i = 0; i < mSources.length; ++i) {
-                sLocations[i] = mSources[i];
+            sLocations = new String[sSources.length];
+            for (int i = 0; i < sSources.length; ++i) {
+                sLocations[i] = sSources[i];
             }
         }
 
-        mParents = new LinearLayout[mSources.length];
-        for (int i = 0; i < mSources.length; ++i) {
+        mParents = new LinearLayout[sSources.length];
+        for (int i = 0; i < sSources.length; ++i) {
             LinearLayout rootLayout = new LinearLayout(MainActivity.this);
             mParents[i] = rootLayout;
             rootLayout.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
             rootLayout.setOrientation(LinearLayout.VERTICAL);
 
             TextView textView = new TextView(MainActivity.this);
-            textView.setText("(" + i + ") " + mSources[i]);
+            textView.setText("(" + i + ") " + sSources[i]);
             rootLayout.addView(textView);
 
             LinearLayout buttonRow = new LinearLayout(MainActivity.this);
@@ -118,7 +118,7 @@ public class MainActivity extends Activity {
             btnTop.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String url = mSources[sSourceIndex];
+                    String url = sSources[sSourceIndex];
                     sLocations[sSourceIndex] = url;
                     mWebViews[sSourceIndex].loadUrl(url);
                 }
@@ -154,8 +154,8 @@ public class MainActivity extends Activity {
             buttonRow.addView(btnRepublican);
         }
 
-        mWebViews = new WebView[mSources.length];
-        for (int i = 0; i < mSources.length; ++i) {
+        mWebViews = new WebView[sSources.length];
+        for (int i = 0; i < sSources.length; ++i) {
             WebView webView = new WebView(this);
 
             mParents[i].addView(webView);
@@ -187,15 +187,13 @@ public class MainActivity extends Activity {
             webView.loadUrl(url);
         }
 
-        sSourceIndex = mSources.length / 2;
-
         updatreLayout();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        for (int i = 0; i < mSources.length; ++i) {
+        for (int i = 0; i < sSources.length; ++i) {
             sLocations[i] = mWebViews[i].getUrl();
         }
     }
@@ -215,15 +213,15 @@ public class MainActivity extends Activity {
     }
 
     private void moveRight() {
-        if ((sSourceIndex + 1) < mSources.length) {
+        if ((sSourceIndex + 1) < sSources.length) {
             sSourceIndex = sSourceIndex + 1;
             updatreLayout();
         }
     }
 
     private void moveFarRight() {
-        if ((sSourceIndex + 1) < mSources.length) {
-            sSourceIndex = mSources.length - 1;
+        if ((sSourceIndex + 1) < sSources.length) {
+            sSourceIndex = sSources.length - 1;
             updatreLayout();
         }
     }
