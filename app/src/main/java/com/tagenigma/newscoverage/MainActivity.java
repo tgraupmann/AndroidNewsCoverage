@@ -3,6 +3,7 @@ package com.tagenigma.newscoverage;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -52,6 +53,27 @@ public class MainActivity extends Activity {
                 setContentView(rootLayout);
             }
         });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (mWebViews[sSourceIndex].canGoBack()) {
+                return false;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (mWebViews[sSourceIndex].canGoBack()) {
+                mWebViews[sSourceIndex].goBack();
+                return false;
+            }
+        }
+        return super.onKeyUp(keyCode, event);
     }
 
     @Override
